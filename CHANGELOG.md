@@ -2,7 +2,7 @@
 
 ## Upcoming
 
--
+- Add `default_rounding_scale` setting to specify the count of decimal digits in the fractional part
 
 ## 6.19.0
 

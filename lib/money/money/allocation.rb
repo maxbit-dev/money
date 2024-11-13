@@ -39,7 +39,12 @@ class Money
         current_split = 0
         if parts_sum > 0
           current_split = remaining_amount * part / parts_sum
-          current_split = current_split.truncate if whole_amounts
+          current_split =
+            if whole_amounts
+              current_split.truncate
+            else
+              current_split.round(Money.default_rounding_scale, Money.rounding_mode)
+            end
         end
 
         result.unshift current_split

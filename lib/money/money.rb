@@ -129,7 +129,7 @@ class Money
     #   Used to specify precision for converting Rational to BigDecimal
     #
     #   @return [Integer]
-    attr_accessor :default_formatting_rules, :default_infinite_precision, :conversion_precision
+    attr_accessor :default_formatting_rules, :default_infinite_precision, :default_rounding_scale, :conversion_precision
     attr_reader :use_i18n, :locale_backend
     attr_writer :default_bank
 
@@ -212,6 +212,9 @@ class Money
 
     # Default to not using infinite precision cents
     self.default_infinite_precision = false
+
+    # When using infinite precision, set max precision cents
+    self.default_rounding_scale = 100
 
     # Default to bankers rounding
     self.rounding_mode = BigDecimal::ROUND_HALF_EVEN
@@ -613,8 +616,8 @@ class Money
   # @see
   #   Money.default_infinite_precision
   #
-  def round(rounding_mode = self.class.rounding_mode, rounding_precision = 0)
-    rounded_amount = as_d(@fractional).round(rounding_precision, rounding_mode)
+  def round(rounding_mode = self.class.rounding_mode, rounding_scale = 0)
+    rounded_amount = as_d(@fractional).round(rounding_scale, rounding_mode)
     dup_with(fractional: rounded_amount)
   end
 
@@ -666,7 +669,7 @@ class Money
 
   def return_value(value)
     if self.class.default_infinite_precision
-      value
+      value.round(self.class.default_rounding_scale, self.class.rounding_mode)
     else
       value.round(0, self.class.rounding_mode).to_i
     end
